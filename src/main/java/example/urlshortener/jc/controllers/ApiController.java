@@ -9,9 +9,11 @@ import example.urlshortener.jc.jsonobj.UrlShortenedResponse;
 import example.urlshortener.jc.generators.IUrlGenerator;
 import example.urlshortener.jc.generators.UrlShortener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @Controller
@@ -22,14 +24,15 @@ public class ApiController {
     @Autowired
     private ShortUrlRepository repository;
 
-    private final int MAX_TRIES = 10000;
+    @Value("${custom-settings.max-retries-for-random-generation}")
+    @Min(1)
+    private int MAX_TRIES;
 
     @PostMapping("/shorten")
     @ResponseBody
     public UrlShortenedResponse requestShortenedUrl(@RequestBody UrlShortenRequest urlRequest) throws ApiException {
 
         // Only support version 1 of API currently and only one method for generation
-
         if (urlRequest.getVersion() <= 0 || urlRequest.getVersion() > SUPPORTED_VERSION_LEVEL)
             throw new ApiException(String.format("Version %d of the API is not supported", urlRequest.getVersion()));
 
@@ -62,6 +65,9 @@ public class ApiController {
     @GetMapping("/stats.latest")
     @ResponseBody
     public List<ShortUrl> latestStats() {
+
+        // Simple return of last 10 urls and access records. This would need a lot more
+        // work to scale, including creating a more granular API
 
         List<ShortUrl> latest = repository.findTop10ByOrderByCreatedOnDesc();
 

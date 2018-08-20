@@ -7,6 +7,7 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
 
     <style>
         body {
@@ -20,15 +21,17 @@
             padding: 1em;
             background: #008080;
             text-align: center;
+            border-radius: 2em;
+            border: solid 1px #808080;
         }
     </style>
 </head>
 <body>
 
-    <div id="app" class="container">
+    <div id="app">
         <h2>{{ title }}</h2>
         <p>Enter the URL, you can also specify the desired length of shortened version</p>
-        <div class="form">
+        <div class="form col-xs-12">
             <div class="form-group">
                 <label for="url">URL:</label>
                 <input v-model="shortUrl" class="form-control" id="url" placeholder="http://somesite.org/page">
@@ -47,10 +50,74 @@
         </div>
         <hr/>
         <div class="well well-lg"><div class="surl">{{ serviceStatus }}</div></div>
-        <div class="well well-lg"></div>
+        <div class="col-xs-12" style="height:2em;"></div>
+        <div class="accordion" id="accordionExample">
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <button @click="showStatsArea = !showStatsArea" class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            Stats View (For the purpose of example)
+                    </button>
+                </h5>
+                </div>
+            
+                <div id="collapseOne" class="collapse" :class="{ show: showStatsArea }" aria-labelledby="headingOne" data-parent="#accordionExample">
+                <div class="card-body" style="overflow: auto">
+                        <button @click="fetchStats" class="btn btn-default">Get Last 10 Urls and Access Info</button>
+
+                        <div class="col-xs-12" style="height:2em;"></div>
+    
+                        <table v-if="statsData" class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Short URL</th>
+                                <th>Access Count</th>
+                                <th>Target URL</th>
+                                <th>Created (UTC)</th>
+                                <th>Accessed</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="su in statsData" :key="su.id">
+                                <td>{{ su.id }}</td>
+                                <td>{{ su.shortVersion }}</td>
+                                <td>{{ su.accessCount }}</td>
+                                <td>{{ su.url }}</td>
+                                <td>{{ su.createdOn | formatDate }}</td>
+                                <td>
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>Time (UTC)</th>
+                                            <th>Source IP</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr v-for="ai in su.accessHistory" :key="su.id">
+                                            <td>{{ ai.utcUnixTime | formatDate }}</td>
+                                            <td>{{ ai.requestIp }}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+    
+                    </div>
+                </div>
+            </div>
+        </div>
+                
     </div>
 
     <script>
+
+        Vue.filter('formatDate', function (value) {
+            if (!value) return ''
+            return moment.unix(value).format("DD-MM-YYYY HH:mm:ss")
+        })
 
         // Adapted From https://cran.r-project.org/web/packages/rex/vignettes/url_parsing.html
         //
@@ -64,9 +131,32 @@
                 errors: [],
                 desiredLength: 6,
                 allowableLengths: [4,5,6,7,8,9,10],
-                serviceStatus: ""
+                serviceStatus: "",
+                statsData: null,
+                showStatsArea: false
             },
             methods: {
+                fetchStats: function() {
+
+                    this.statsData = null
+
+                    var self = this
+                    fetch("stats.latest", {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        method: 'GET'
+                    })
+                    .then(function(rsp) { return rsp.json() })
+                    .then(function(data) {
+                        self.statsData = data
+                    })
+                    .catch(function(error) {
+                        self.serviceStatus = "Error: " + error
+                    })
+                },
+
                 fetchUrl: function() {
                     this.errors = []
                     this.serviceStatus = ""

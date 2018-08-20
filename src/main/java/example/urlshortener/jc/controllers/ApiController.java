@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 public class ApiController {
 
@@ -56,6 +58,16 @@ public class ApiController {
 
         return new UrlShortenedResponse(dataObj.getId(), dataObj.getUrl(), dataObj.getShortVersion());
     }
+
+    @GetMapping("/stats.latest")
+    @ResponseBody
+    public List<ShortUrl> latestStats() {
+
+        List<ShortUrl> latest = repository.findTop10ByOrderByCreatedOnDesc();
+
+        return latest;
+    }
+
 
 }
 

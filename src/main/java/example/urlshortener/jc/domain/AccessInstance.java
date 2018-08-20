@@ -1,5 +1,8 @@
 package example.urlshortener.jc.domain;
 
+/**
+ * Represents a redirect request instance and records the source IP and time (UTC)
+ */
 public class AccessInstance {
 
     private long utcUnixTime;

@@ -2,6 +2,12 @@ package example.urlshortener.jc.generators;
 
 import java.security.SecureRandom;
 
+/**
+ * The single and default mode is IUrlGenerator.GenerationMethod.DEFAULT which is mapped to
+ * IUrlGenerator.GenerationMethod.BASIC_RANDOM. If this is extended then this method could be set
+ * via an application configuration setting, or even an extra parameter to the /shorten API.
+ *
+ */
 public class UrlShortener {
     private final String url;
 

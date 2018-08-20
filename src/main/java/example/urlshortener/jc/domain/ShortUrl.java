@@ -10,6 +10,11 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The main entity representing the mapping between a unique token and a URL.
+ *
+ *
+ */
 public class ShortUrl {
 
     @Id

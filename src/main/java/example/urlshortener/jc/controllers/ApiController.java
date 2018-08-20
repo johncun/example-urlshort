@@ -16,6 +16,13 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.Min;
 import java.util.List;
 
+/**
+ * Ajax based API calls are handled in this class.
+ *
+ *  /shorten        An API to shorten a given URL with a desired length parameter
+ *  /stats.latest   An example API endpoint to return some statistical information on URL usage
+ *
+ */
 @Controller
 public class ApiController {
 
@@ -62,6 +69,9 @@ public class ApiController {
         return new UrlShortenedResponse(dataObj.getId(), dataObj.getUrl(), dataObj.getShortVersion());
     }
 
+    /**
+     * Simple method to return the latest statistics (last 10 urls created)
+     */
     @GetMapping("/stats.latest")
     @ResponseBody
     public List<ShortUrl> latestStats() {

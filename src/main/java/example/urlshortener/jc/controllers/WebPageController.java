@@ -12,6 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Ensure that these endpoints are not handled as a generic short URL redirect. The root and /error views will
+ * resolve to the corresponding templates. As these templates contain a period character - which will never be
+ * part of a legal redirect request, there is no way /error can be interpreted incorrectly.
+ */
 @Controller
 public class WebPageController {
     @Autowired

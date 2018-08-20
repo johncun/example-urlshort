@@ -2,8 +2,6 @@
 
 Exercise in creating a URL shortener service.
 
-> ![](web-page.png)
-
 -----
 ## Quick Build Instructions
 
@@ -12,6 +10,11 @@ gradlew build
 cd docker
 compose
 ````
+
+Then test using browser on http://localhost:9091
+
+> ![](src/doc/web-page.png)
+
 _____
 <!-- TOC -->
 
@@ -58,7 +61,7 @@ for satisfying a redirect request should be sub 100ms
 * Protection against denial of service or unfair usage
 * User accounts allowing non-anonymous ownership of URLs
 * Should be scalable, but initial version does not have to support large scale - both in number of requests
-* Administration UI and services for managing the URLs - for example removal of stale data, removal of links asscociated with an owner
+* Administration UI and services for managing the URLs - for example removal of stale data, removal of links associated with an owner
 * Complex UI to handle the shortening request, a single form should suffice - this can be extended later if needed
 * CI pipeline
 * Extensive tests
@@ -66,7 +69,7 @@ for satisfying a redirect request should be sub 100ms
 
 # Solution Design/Overview
 
-> ![](overview.png)
+> ![](src/doc/overview.png)
 
 ## Presentation Tier (Browser)
 
@@ -124,6 +127,10 @@ Simple API called with a single function to create a new shortened URL.
 
 To scale the implementation the redirect service could be separate from the creation service, however this should not be necessary until large numbers of requests would need to be supported - this is not a known requirement, scalability could achieved by scaling out the web tier into multiple instances. 
 
+I have added simple statistics gathering, and then an interface to see the latest ones (as an example). Each request increments the number of times a URL was redirected, logs the time and the source IP address.
+
+> ![](src/docs/show-stats.png)
+
 ## Data Tier
 
 Uses Mongo DB to store the data. This could also be front-ended with a cache such as Redis for extra speed on the redirect requests, however whether this is needed will be dependent upon the profile of the usage of the service. The cache would only be worthwhile if many requests for the same shortened URL were likely in a short period of time. The simplicity of the data model (and possible even with extending the service) does not necesssarily require a relational DB. If eventual consistency (within reason as this is a human usable service) becomes and issue, then maybe the data tier might be changed. 
@@ -142,21 +149,20 @@ Uses Mongo DB to store the data. This could also be front-ended with a cache suc
 * Developed on windows using Docker toolbox with Oracle Virtualbox.
 * Default VM on Virtualbox needs to have host port 9091 mapped to 8080 (which is exposed from the web container)
 
-> ![](virtualbox.png)
+> ![](src/doc/virtualbox.png)
 
 
 ### IDEA IntelliJ
 
-> ![](dev-idea-impl.png)
+> ![](src/doc/dev-idea-impl.png)
 
 | Notable Gradle Tasks | |
 | ---- | ---- |
 | bootJar|  Builds, tests and creates an uber jar for the Spring application |
-| buildDockerImage | Builds a local docker image using docker/Dockerfile called jc/urlex which auto starts the application (uses Open JDK 8) |
 
 ### Docker
 
-> ![](docker-impl.png)
+> ![](src/doc/docker-impl.png)
 
 | Notable Docker Scripts | |
 | ---- | ---- |
@@ -172,6 +178,8 @@ http://localhost:9091/
 
 * IntelliJ
 
+Start mongo instance manually unless testing (embedded mongo will be used).
+
 http://localhost:8080/
 
 
@@ -179,7 +187,7 @@ http://localhost:8080/
 
  - create a shortened URL (Windows)
  ````cmd
-curl -X POST http://localhost:9091/shorten -H "Content-Type: application/json" -H "Accept: application/json" -d "{ """url""":"""http://github.com""" }"
+curl -X POST http://localhost:9091/shorten -H "Content-Type: application/json" -H "Accept: application/json" -d "{ """version""": 1, """url""":"""http://github.com""" }"
 ````
  - Example request
 ````cmd

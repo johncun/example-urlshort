@@ -14,6 +14,10 @@ public interface ShortUrlRepository extends MongoRepository<ShortUrl, String> {
 
 	ShortUrl findByShortVersion(@Param("shortVersion") String shortVersion);
 
+	/**
+	 *
+	 * @return a list of records (up to 10) with most recent being first in the list
+	 */
 	List<ShortUrl> findTop10ByOrderByCreatedOnDesc();
 }
 

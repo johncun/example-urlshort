@@ -5,6 +5,9 @@ import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
+/**
+ * This class is used to package up errors (trapoped by exceptions) when the API is called.
+ */
 public class ApiError {
 
     private HttpStatus status;

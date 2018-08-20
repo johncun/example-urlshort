@@ -1,4 +1,3 @@
-
 package example.urlshortener.jc;
 
 import org.springframework.boot.SpringApplication;

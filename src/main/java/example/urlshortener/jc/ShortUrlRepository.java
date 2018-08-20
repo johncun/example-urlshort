@@ -1,4 +1,3 @@
-
 package example.urlshortener.jc;
 
 import example.urlshortener.jc.domain.ShortUrl;

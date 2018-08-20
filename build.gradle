@@ -22,6 +22,14 @@ bootJar {
     version = '0.1.0'
 }
 
+task copyJarToDocker(type: Copy) {
+    dependsOn bootJar
+    println "COPYING build/libs/app-${bootJar.version}.jar to docker"
+    from "build/libs/app-${bootJar.version}.jar"
+    into "docker"
+    rename { String fileName -> fileName.replace("-${bootJar.version}", "") }
+}
+
 repositories {
     mavenCentral()
 }
@@ -38,3 +46,4 @@ dependencies {
     testCompile("de.flapdoodle.embed:de.flapdoodle.embed.mongo:2.1.1")
 }
 
+build.dependsOn copyJarToDocker

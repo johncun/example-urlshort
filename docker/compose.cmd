@@ -1,2 +1,2 @@
- docker-compose up --build
+ docker-compose up --build --force-recreate
  rem --force-recreate

@@ -3,8 +3,8 @@ out/
 .idea/
 build/
 target/
-*.jar
 bin/
+app.jar
 .project/
 .settings/
 .classpath/

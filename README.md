@@ -129,7 +129,7 @@ To scale the implementation the redirect service could be separate from the crea
 
 I have added simple statistics gathering, and then an interface to see the latest ones (as an example). Each request increments the number of times a URL was redirected, logs the time and the source IP address.
 
-> ![](src/docs/show-stats.png)
+> ![](src/doc/show-stats.png)
 
 ## Data Tier
 
